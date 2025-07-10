@@ -55,3 +55,8 @@ jobs:
             --service $ECS_SERVICE \
             --force-new-deployment \
             --region $AWS_REGION
+     
+      - name: 🌐 Show App Domain URL
+        run: terraform output -raw app_domain_url
+
+
