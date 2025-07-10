@@ -29,4 +29,10 @@ output "public_subnet_2_id" {
   value       = aws_subnet.public_2.id
 }
 
+output "app_domain_url" {
+  description = "App URL with HTTPS"
+  value       = "https://${aws_route53_record.app_dns.name}"
+}
+
+
 
