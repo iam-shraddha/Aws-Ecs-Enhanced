@@ -16,8 +16,9 @@ jobs:
 
     env:
       AWS_REGION: ap-south-1
-      ECR_REPOSITORY: node-app-2
-      CONTAINER_NAME: node-app-2
+      ECR_REPOSITORY: node-app-v2
+      ECS_CLUSTER: node-app-v2
+      ECS_SERVICE: node-app-v2
 
     steps:
       - name: 📦 Checkout Code
@@ -31,13 +32,12 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: 🐳 Login to Amazon ECR
-        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: 🔧 Extract ECR Repository URI
+      - name: 🔧 Get ECR Repo URI
         id: ecr
         run: |
-          echo "REPO_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --region $AWS_REGION --query 'repositories[0].repositoryUri' --output text)" >> $GITHUB_ENV
+          echo "REPO_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text --region $AWS_REGION)" >> $GITHUB_ENV
 
       - name: 🏗️ Build and Tag Docker Image
         run: |
@@ -51,7 +51,7 @@ jobs:
       - name: 🔁 Update ECS Service
         run: |
           aws ecs update-service \
-            --cluster $ECR_REPOSITORY \
-            --service $ECR_REPOSITORY \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
             --force-new-deployment \
             --region $AWS_REGION
