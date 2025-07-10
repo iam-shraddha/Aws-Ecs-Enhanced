@@ -144,16 +144,22 @@ resource "aws_lb_target_group" "app_tg" {
   }
 }
 
-resource "aws_lb_listener" "app_listener" {
+resource "aws_lb_listener" "http_redirect" {
   load_balancer_arn = aws_lb.app_alb.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
+
 
 # -----------------------------
 # ECS Task Definition
@@ -266,4 +272,19 @@ resource "aws_route53_record" "app_dns" {
     evaluate_target_health = true
   }
 }
+
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+
+  ssl_policy        = "ELBSecurityPolicy-2016-08"  # Or any modern TLS policy
+  certificate_arn   = "arn:aws:acm:ap-south-1:123456789012:certificate/your-certificate-id" # Replace with your actual ACM cert ARN
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
 
