@@ -4,7 +4,7 @@ provider "aws" {
 
 data "aws_availability_zones" "available" {} 
   
-# -----------------------------
+# ----------------------------- 
 # VPC + Networking
 # -----------------------------
 resource "aws_vpc" "main" {
