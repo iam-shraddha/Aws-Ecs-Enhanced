@@ -1,7 +1,7 @@
 # Use a lightweight Node.js image
 FROM node:18-alpine
  
-# Set working directory
+# Set working directory 
 WORKDIR /usr/src/app
 
 # Set non-sensitive environment variables (optional)
