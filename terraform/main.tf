@@ -247,3 +247,23 @@ resource "aws_appautoscaling_policy" "scale_up" {
     scale_out_cooldown = 60
   }
 }
+
+# Fetch hosted zone for ecsdemo.xyz
+data "aws_route53_zone" "selected" {
+  name         = "ecsdemo.xyz"
+  private_zone = false
+}
+
+# Create A record that maps domain to ALB
+resource "aws_route53_record" "app_dns" {
+  zone_id = data.aws_route53_zone.selected.zone_id
+  name    = "ecsdemo.xyz"  # or use www.ecsdemo.xyz if you prefer subdomain
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.app_alb.dns_name
+    zone_id                = aws_lb.app_alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
