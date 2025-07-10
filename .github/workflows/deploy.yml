@@ -16,8 +16,8 @@ jobs:
 
     env:
       AWS_REGION: ap-south-1
-      ECR_REPOSITORY: node-app
-      CONTAINER_NAME: node-app
+      ECR_REPOSITORY: node-app-2
+      CONTAINER_NAME: node-app-2
 
     steps:
       - name: 📦 Checkout Code
