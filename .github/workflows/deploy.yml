@@ -9,6 +9,7 @@ on:
       - '.github/workflows/deploy.yml'
       - 'package.json'
       - 'client/**'
+      - 'terraform/**'
 
 jobs:
   deploy:
@@ -55,8 +56,16 @@ jobs:
             --service $ECS_SERVICE \
             --force-new-deployment \
             --region $AWS_REGION
-     
-      - name: 🌐 Show App Domain URL
+
+      - name: 📥 Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: 📂 Terraform Init (with remote backend)
+        run: terraform init
+        working-directory: terraform  # adjust if not in terraform/
+
+      - name: 🌐 Get HTTPS App URL
         run: terraform output -raw app_domain_url
-
-
+        working-directory: terraform
