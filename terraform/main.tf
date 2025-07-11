@@ -228,6 +228,10 @@ resource "aws_ecs_service" "app" {
     security_groups  = [aws_security_group.ecs_sg.id]
   }
 
+
+# -----------------------------------
+# Connect ECS Service to Target Group
+# -----------------------------------
   load_balancer {
     target_group_arn = aws_lb_target_group.app_tg.arn
     container_name   = "node-app-v2"
