@@ -16,22 +16,26 @@ jobs:
 
     env:
       TF_IN_AUTOMATION: true
-
+      
     steps:
+    # Pulls your repo to GitHub runner.
       - name: 🧾 Checkout Code
         uses: actions/checkout@v3
-
+   
+    # Installs Terraform on the GitHub Actions runner.
       - name: ⚙️ Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.6.0
-
+   
+   # Authenticates to your AWS account using secrets
       - name: 🔁 Terraform Init
         run: terraform init
         env:
           AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+   # Provisions your infrastructure
       - name: ✅ Terraform Validate
         run: terraform validate
 
