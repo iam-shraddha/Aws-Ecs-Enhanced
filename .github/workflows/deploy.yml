@@ -64,7 +64,7 @@ jobs:
 
       - name: 📂 Terraform Init (with remote backend)
         run: terraform init
-        working-directory: terraform  # adjust if not in terraform/
+        working-directory: terraform  
 
       - name: 🌐 Get HTTPS App URL
         run: terraform output -raw app_domain_url
