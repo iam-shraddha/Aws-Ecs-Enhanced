@@ -22,9 +22,12 @@ jobs:
       ECS_SERVICE: node-app-v2
 
     steps:
+
+    # Pulls your app code.
       - name: 📦 Checkout Code
         uses: actions/checkout@v3
-
+  
+   # Uses AWS credentials from GitHub Secrets to authenticate.
       - name: 🔐 Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -32,6 +35,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+   # Authenticates Docker to push to your ECR repository.
       - name: 🐳 Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
@@ -39,16 +43,19 @@ jobs:
         id: ecr
         run: |
           echo "REPO_URI=$(aws ecr describe-repositories --repository-names $ECR_REPOSITORY --query 'repositories[0].repositoryUri' --output text --region $AWS_REGION)" >> $GITHUB_ENV
-
+ 
+  # Builds Docker image and tags it with ECR URI.
       - name: 🏗️ Build and Tag Docker Image
         run: |
           docker build -t $ECR_REPOSITORY .
           docker tag $ECR_REPOSITORY:latest $REPO_URI:latest
 
+ # Uploads your image to ECR.
       - name: 🚀 Push Docker Image to ECR
         run: |
           docker push $REPO_URI:latest
 
+ # Forces ECS to pull latest image and restart task.
       - name: 🔁 Update ECS Service
         run: |
           aws ecs update-service \
@@ -56,7 +63,7 @@ jobs:
             --service $ECS_SERVICE \
             --force-new-deployment \
             --region $AWS_REGION
-
+  # Initialize Terraform with Remote Backend
       - name: 📥 Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -65,7 +72,8 @@ jobs:
       - name: 📂 Terraform Init (with remote backend)
         run: terraform init
         working-directory: terraform  
-
+  
+  # Get URL to access application
       - name: 🌐 Get HTTPS App URL
         run: terraform output -raw app_domain_url
         working-directory: terraform
