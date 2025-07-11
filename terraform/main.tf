@@ -133,6 +133,9 @@ resource "aws_lb" "app_alb" {
   ]
 }
 
+# -----------------------------
+# Target Group
+# -----------------------------
 resource "aws_lb_target_group" "app_tg" {
   name        = "ecs-app-tg-v2"
   port        = 3000
@@ -150,6 +153,9 @@ resource "aws_lb_target_group" "app_tg" {
   }
 }
 
+# -----------------------------
+# Listeners
+# -----------------------------
 resource "aws_lb_listener" "http_redirect" {
   load_balancer_arn = aws_lb.app_alb.arn
   port              = 80
@@ -165,7 +171,6 @@ resource "aws_lb_listener" "http_redirect" {
     }
   }
 }
-
 
 # -----------------------------
 # ECS Task Definition
@@ -260,7 +265,10 @@ resource "aws_appautoscaling_policy" "scale_up" {
   }
 }
 
+# ----------------------------------
 # Fetch hosted zone for ecsdemo.xyz
+# ----------------------------------
+
 data "aws_route53_zone" "selected" {
   name         = "ecsdemo.xyz"
   private_zone = false
@@ -279,6 +287,9 @@ resource "aws_route53_record" "app_dns" {
   }
 }
 
+# ---------------------------------
+# Add HTTPS Listener to ALB
+# ---------------------------------
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.app_alb.arn
   port              = 443
